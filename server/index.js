@@ -1,0 +1,110 @@
+import express from 'express';
+import cors from 'cors';
+import sqlite3 from 'sqlite3';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = 5000;
+
+app.use(cors());
+app.use(express.json());
+
+// database file
+const dbPath = path.join(__dirname, 'database.db');
+
+// connect to DB
+const db = new sqlite3.Database(dbPath, (err) => {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log('✅ Connected to SQLite DB');
+  }
+});
+
+// create table if not exists
+db.run(`
+  CREATE TABLE IF NOT EXISTS registrations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    teamName TEXT,
+    leaderFullName TEXT,
+    leaderEmail TEXT,
+    leaderPhone TEXT,
+    leaderCin TEXT,
+    member1FullName TEXT,
+    member1Email TEXT,
+    member2FullName TEXT,
+    member2Email TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
+// health route
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+// show registrations
+app.get('/api/registrations', (req, res) => {
+  db.all('SELECT * FROM registrations ORDER BY id DESC', [], (err, rows) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'DB Error ❌' });
+    }
+
+    res.json(rows);
+  });
+});
+
+// register route
+app.post('/api/register', (req, res) => {
+  const data = req.body;
+
+  console.log('REGISTER:', data);
+
+  const sql = `
+    INSERT INTO registrations (
+      teamName,
+      leaderFullName,
+      leaderEmail,
+      leaderPhone,
+      leaderCin,
+      member1FullName,
+      member1Email,
+      member2FullName,
+      member2Email
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  db.run(
+    sql,
+    [
+      data.teamName,
+      data.leaderFullName,
+      data.leaderEmail,
+      data.leaderPhone,
+      data.leaderCin,
+      data.member1FullName,
+      data.member1Email,
+      data.member2FullName,
+      data.member2Email
+    ],
+    function (err) {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'DB Error ❌' });
+      }
+
+      console.log('✅ Saved with ID:', this.lastID);
+
+      res.json({ message: 'Saved in DB ✅' });
+    }
+  );
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
