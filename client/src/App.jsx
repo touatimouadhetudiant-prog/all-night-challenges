@@ -6,7 +6,7 @@ import leadersLogo from './assets/leaders.jpg';
 import ovcLogo from './assets/ovc.jpg';
 import essatLogo from './assets/essat.jpg';
 import robotImage from './assets/robot.png';
-
+const API_URL = "https://all-night-challenges-production.up.railway.app";
 function App() {
   const navigate = useNavigate();
 
