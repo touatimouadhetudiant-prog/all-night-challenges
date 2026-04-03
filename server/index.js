@@ -8,24 +8,21 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT) || 5000;
 
 app.use(cors());
 app.use(express.json());
 
-// database file
 const dbPath = path.join(__dirname, 'database.db');
 
-// connect to DB
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
-    console.error(err);
+    console.error('DB CONNECT ERROR:', err);
   } else {
-    console.log('✅ Connected to SQLite DB');
+    console.log('Connected to SQLite DB');
   }
 });
 
-// create table if not exists
 db.run(`
   CREATE TABLE IF NOT EXISTS registrations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -40,18 +37,22 @@ db.run(`
     member2Email TEXT,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
   )
-`);
+`, (err) => {
+  if (err) {
+    console.error('TABLE CREATE ERROR:', err);
+  } else {
+    console.log('registrations table ready');
+  }
+});
 
-// health route
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// show registrations
 app.get('/api/registrations', (req, res) => {
   db.all('SELECT * FROM registrations ORDER BY id DESC', [], (err, rows) => {
     if (err) {
-      console.error(err);
+      console.error('GET REGISTRATIONS ERROR:', err);
       return res.status(500).json({ message: 'DB Error ❌' });
     }
 
@@ -59,7 +60,6 @@ app.get('/api/registrations', (req, res) => {
   });
 });
 
-// register route
 app.post('/api/register', (req, res) => {
   const data = req.body;
 
@@ -101,13 +101,24 @@ app.post('/api/register', (req, res) => {
         });
       }
 
-      console.log('✅ Saved with ID:', this.lastID);
-
+      console.log('Saved with ID:', this.lastID);
       res.json({ message: 'Saved in DB ✅', id: this.lastID });
     }
   );
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
+});
+
+server.on('error', (err) => {
+  console.error('SERVER LISTEN ERROR:', err);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('UNCAUGHT EXCEPTION:', err);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.error('UNHANDLED REJECTION:', err);
 });
