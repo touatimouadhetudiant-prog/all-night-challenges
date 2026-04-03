@@ -89,8 +89,19 @@ function AdminPage() {
                 <td>{item.leaderCin}</td>
                 <td>{item.leaderEmail}</td>
                 <td>
-                  {item.member1FullName} <br />
-                  {item.member2FullName}
+                    <div>
+                    <strong>{item.member1FullName}</strong><br />
+                    <span className="text-sm text-gray-400">
+                        {item.member1Email}
+                    </span>
+                    </div>
+
+                    <div className="mt-2">
+                        <strong>{item.member2FullName}</strong><br />
+                        <span className="text-sm text-gray-400">
+                            {item.member2Email}
+                        </span>
+                    </div>
                 </td>
                 <td>{item.createdAt}</td>
               </tr>
