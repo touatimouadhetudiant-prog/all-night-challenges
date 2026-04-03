@@ -63,7 +63,7 @@ app.get('/api/registrations', (req, res) => {
 app.post('/api/register', (req, res) => {
   const data = req.body;
 
-  console.log('REGISTER:', data);
+  console.log('REGISTER HIT:', data);
 
   const sql = `
     INSERT INTO registrations (
@@ -94,13 +94,16 @@ app.post('/api/register', (req, res) => {
     ],
     function (err) {
       if (err) {
-        console.error(err);
-        return res.status(500).json({ message: 'DB Error ❌' });
+        console.error('REGISTER DB ERROR:', err);
+        return res.status(500).json({
+          message: 'DB Error ❌',
+          error: err.message
+        });
       }
 
       console.log('✅ Saved with ID:', this.lastID);
 
-      res.json({ message: 'Saved in DB ✅' });
+      res.json({ message: 'Saved in DB ✅', id: this.lastID });
     }
   );
 });
