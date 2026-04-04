@@ -19,7 +19,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('DB CONNECT ERROR:', err);
   } else {
-    console.log('Connected to SQLite DB');
+    console.log('Connected to SQLite DBm');
   }
 });
 
