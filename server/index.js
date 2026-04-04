@@ -46,6 +46,17 @@ db.run(`
 });
 
 app.get('/api/health', (req, res) => {
+  app.delete('/api/delete-all-registrations', (req, res) => {
+  db.run('DELETE FROM registrations', function (err) {
+    if (err) {
+      console.error('DELETE ALL ERROR:', err);
+      return res.status(500).json({ message: 'Delete failed ❌' });
+    }
+
+    console.log('All registrations deleted ✅');
+    res.json({ message: 'All registrations deleted ✅' });
+  });
+});
   res.json({ status: 'ok' });
 });
 
