@@ -45,6 +45,28 @@ db.run(`
   }
 });
 
+db.run(`
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_teamName
+  ON registrations(LOWER(TRIM(teamName)))
+`, (err) => {
+  if (err) {
+    console.error('UNIQUE teamName ERROR:', err);
+  } else {
+    console.log('Unique teamName ready ✅');
+  }
+});
+
+db.run(`
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_leaderEmail
+  ON registrations(LOWER(TRIM(leaderEmail)))
+`, (err) => {
+  if (err) {
+    console.error('UNIQUE leaderEmail ERROR:', err);
+  } else {
+    console.log('Unique leaderEmail ready ✅');
+  }
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
@@ -107,6 +129,13 @@ app.post('/api/register', (req, res) => {
     function (err) {
       if (err) {
         console.error('REGISTER DB ERROR:', err);
+
+        if (err.message.includes('UNIQUE')) {
+          return res.status(400).json({
+            message: 'Team name or Leader email already exists ❌'
+          });
+        }
+
         return res.status(500).json({
           message: 'DB Error ❌',
           error: err.message
