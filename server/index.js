@@ -45,26 +45,36 @@ db.run(`
   }
 });
 
-db.run(`
-  CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_teamName
-  ON registrations(LOWER(TRIM(teamName)))
-`, (err) => {
-  if (err) {
-    console.error('UNIQUE teamName ERROR:', err);
-  } else {
-    console.log('Unique teamName ready ✅');
-  }
-});
+db.serialize(() => {
+  db.run('DELETE FROM registrations', (deleteErr) => {
+    if (deleteErr) {
+      console.error('DELETE ALL ERROR:', deleteErr);
+    } else {
+      console.log('All old registrations deleted ✅');
+    }
+  });
 
-db.run(`
-  CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_leaderEmail
-  ON registrations(LOWER(TRIM(leaderEmail)))
-`, (err) => {
-  if (err) {
-    console.error('UNIQUE leaderEmail ERROR:', err);
-  } else {
-    console.log('Unique leaderEmail ready ✅');
-  }
+  db.run(`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_teamName
+    ON registrations(LOWER(TRIM(teamName)))
+  `, (err) => {
+    if (err) {
+      console.error('UNIQUE teamName ERROR:', err);
+    } else {
+      console.log('Unique teamName ready ✅');
+    }
+  });
+
+  db.run(`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_leaderEmail
+    ON registrations(LOWER(TRIM(leaderEmail)))
+  `, (err) => {
+    if (err) {
+      console.error('UNIQUE leaderEmail ERROR:', err);
+    } else {
+      console.log('Unique leaderEmail ready ✅');
+    }
+  });
 });
 
 app.get('/api/health', (req, res) => {
