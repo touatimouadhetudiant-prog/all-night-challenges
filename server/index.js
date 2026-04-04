@@ -46,14 +46,7 @@ db.run(`
 });
 
 db.serialize(() => {
-  db.run('DELETE FROM registrations', (deleteErr) => {
-    if (deleteErr) {
-      console.error('DELETE ALL ERROR:', deleteErr);
-    } else {
-      console.log('All old registrations deleted ✅');
-    }
-  });
-
+  
   db.run(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_teamName
     ON registrations(LOWER(TRIM(teamName)))
