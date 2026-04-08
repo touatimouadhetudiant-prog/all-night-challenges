@@ -675,12 +675,12 @@ function App() {
         <div className="grid gap-6 md:grid-cols-3">
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 text-center backdrop-blur-xl">
             <p className="mb-2 font-bold text-cyan-300">Phone</p>
-            <p className="text-gray-300">+216 99 999 999</p>
+            <p className="text-gray-300">+216 25 496 040</p>
           </div>
 
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 text-center backdrop-blur-xl">
             <p className="mb-2 font-bold text-cyan-300">Email</p>
-            <p className="text-gray-300">allnightchallenges@event.com</p>
+            <p className="text-gray-300">allnightchallenges@gmail.com</p>
           </div>
 
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 text-center backdrop-blur-xl">
