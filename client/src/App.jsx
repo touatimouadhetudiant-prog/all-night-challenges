@@ -6,6 +6,8 @@ import leadersLogo from './assets/leaders.jpg';
 import ovcLogo from './assets/ovc.jpg';
 import essatLogo from './assets/essat.jpg';
 import robotImage from './assets/robot.png';
+import forumLogo from './assets/forum.png';
+import oasisLogo from './assets/oasis.png';
 
 const API_URL = 'https://all-night-challenges-production.up.railway.app';
 
@@ -695,22 +697,56 @@ function App() {
           Partners
         </h2>
 
-        <div className="mx-auto max-w-md rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center shadow-[0_0_35px_rgba(255,255,255,0.06)] backdrop-blur-xl">
-          <div className="mx-auto mb-6 inline-flex rounded-2xl bg-white p-4">
-            <img
-              src={essatLogo}
-              alt="ESSAT Privée Gabès"
-              className="w-40 object-contain"
-            />
+        <div className="grid gap-8 md:grid-cols-3">
+          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center shadow-[0_0_35px_rgba(255,255,255,0.06)] backdrop-blur-xl">
+            <div className="mx-auto mb-6 inline-flex rounded-2xl bg-white p-4">
+              <img
+                src={essatLogo}
+                alt="ESSAT Privée Gabès"
+                className="w-32 object-contain"
+              />
+            </div>
+            <h3 className="text-xl font-bold text-white">ESSAT Privée Gabès</h3>
+            <p className="mt-4 leading-7 text-gray-400">
+              L’Ecole Supérieure des Sciences Appliquées et de la Technologie
+              Privée de Gabès (ESSAT) a été créée en 2007 autour d’un projet qui
+              concilie pédagogie de haut niveau, initiatives personnelles,
+              développement du comportement professionnel et mise en œuvre de
+              moyens innovants dans le domaine de l’enseignement supérieur.
+            </p>
           </div>
-          <h3 className="text-2xl font-bold text-white">ESSAT Privée Gabès</h3>
-          <p className="mt-4 leading-7 text-gray-400">
-            L’Ecole Supérieure des Sciences Appliquées et de la Technologie
-            Privée de Gabès (ESSAT) a été créée en 2007 autour d’un projet qui
-            concilie pédagogie de haut niveau, initiatives personnelles,
-            développement du comportement professionnel et mise en œuvre de
-            moyens innovants dans le domaine de l’enseignement supérieur.
-          </p>
+
+          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center shadow-[0_0_35px_rgba(255,255,255,0.06)] backdrop-blur-xl">
+            <div className="mx-auto mb-6 inline-flex rounded-2xl bg-white p-4">
+              <img
+                src={oasisLogo}
+                alt="Oasis FM"
+                className="w-32 object-contain"
+              />
+            </div>
+            <h3 className="text-xl font-bold text-white">Oasis FM</h3>
+            <p className="mt-4 leading-7 text-gray-400">
+              Oasis FM is a private Tunisian radio station based in Gabès. It
+              was launched on 29 December 2011 and is considered the first local
+              radio station in the region.
+            </p>
+          </div>
+
+          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center shadow-[0_0_35px_rgba(255,255,255,0.06)] backdrop-blur-xl">
+            <div className="mx-auto mb-6 inline-flex rounded-2xl bg-white p-4">
+              <img
+                src={forumLogo}
+                alt="Forum FM"
+                className="w-32 object-contain"
+              />
+            </div>
+            <h3 className="text-xl font-bold text-white">Forum FM</h3>
+            <p className="mt-4 leading-7 text-gray-400">
+              Forum Radio is a private Tunisian radio station based in Gabès. It
+              was launched after the 2011 revolution and focuses on local and
+              regional issues, especially those affecting the south of Tunisia.
+            </p>
+          </div>
         </div>
       </section>
     </div>
