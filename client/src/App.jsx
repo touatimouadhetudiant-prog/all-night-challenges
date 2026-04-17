@@ -10,6 +10,7 @@ import forumLogo from './assets/forum.png';
 import oasisLogo from './assets/oasis.png';
 
 const API_URL = 'https://all-night-challenges-production.up.railway.app';
+const DEADLINE = new Date('2026-04-19T08:00:00');
 
 function App() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isClosed, setIsClosed] = useState(false);
   const [toast, setToast] = useState({
     show: false,
     message: '',
@@ -25,14 +27,8 @@ function App() {
 
   const [formData, setFormData] = useState({
     teamName: '',
-    leaderFullName: '',
-    leaderEmail: '',
-    leaderPhone: '',
     leaderCin: '',
-    member1FullName: '',
-    member1Email: '',
-    member2FullName: '',
-    member2Email: '',
+    driveLink: '',
   });
 
   useEffect(() => {
@@ -42,6 +38,18 @@ function App() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const checkDeadline = () => {
+      const now = new Date();
+      setIsClosed(now >= DEADLINE);
+    };
+
+    checkDeadline();
+    const interval = setInterval(checkDeadline, 60000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const stars = useMemo(
@@ -77,8 +85,17 @@ function App() {
     }, 3000);
   };
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const normalize = (value) => value.trim().toLowerCase();
+  const isValidDriveLink = (url) => {
+    try {
+      const parsed = new URL(url);
+      return (
+        (parsed.protocol === 'http:' || parsed.protocol === 'https:') &&
+        parsed.hostname.includes('drive.google.com')
+      );
+    } catch {
+      return false;
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -90,64 +107,25 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (isSubmitting) return;
+    if (isSubmitting || isClosed) return;
 
     if (!formData.teamName.trim()) {
       showToast('Team name is required ❌', 'error');
       return;
     }
 
-    if (!formData.leaderFullName.trim()) {
-      showToast('Leader full name is required ❌', 'error');
+    if (!/^\d{8}$/.test(formData.leaderCin.trim())) {
+      showToast('Leader CIN must be exactly 8 digits ❌', 'error');
       return;
     }
 
-    if (!formData.leaderEmail.trim()) {
-      showToast('Leader email is required ❌', 'error');
+    if (!formData.driveLink.trim()) {
+      showToast('Drive link is required ❌', 'error');
       return;
     }
 
-    if (!emailRegex.test(formData.leaderEmail.trim())) {
-      showToast('Leader email is invalid ❌', 'error');
-      return;
-    }
-
-    if (!/^\d{8}$/.test(formData.leaderPhone.trim())) {
-      showToast('Phone must be exactly 8 digits ❌', 'error');
-      return;
-    }
-
-    if (formData.leaderCin && !/^\d{8}$/.test(formData.leaderCin.trim())) {
-      showToast('CIN must be exactly 8 digits ❌', 'error');
-      return;
-    }
-
-    if (
-      formData.member1Email.trim() &&
-      !emailRegex.test(formData.member1Email.trim())
-    ) {
-      showToast('Member 1 email is invalid ❌', 'error');
-      return;
-    }
-
-    if (
-      formData.member2Email.trim() &&
-      !emailRegex.test(formData.member2Email.trim())
-    ) {
-      showToast('Member 2 email is invalid ❌', 'error');
-      return;
-    }
-
-    const emails = [
-      formData.leaderEmail,
-      formData.member1Email,
-      formData.member2Email,
-    ]
-      .filter((email) => email.trim() !== '')
-      .map(normalize);
-
-    if (new Set(emails).size !== emails.length) {
-      showToast('Emails must be different ❌', 'error');
+    if (!isValidDriveLink(formData.driveLink.trim())) {
+      showToast('Please enter a valid Google Drive link ❌', 'error');
       return;
     }
 
@@ -158,16 +136,9 @@ function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...formData,
           teamName: formData.teamName.trim(),
-          leaderFullName: formData.leaderFullName.trim(),
-          leaderEmail: formData.leaderEmail.trim(),
-          leaderPhone: formData.leaderPhone.trim(),
           leaderCin: formData.leaderCin.trim(),
-          member1FullName: formData.member1FullName.trim(),
-          member1Email: formData.member1Email.trim(),
-          member2FullName: formData.member2FullName.trim(),
-          member2Email: formData.member2Email.trim(),
+          driveLink: formData.driveLink.trim(),
         }),
       });
 
@@ -180,17 +151,11 @@ function App() {
 
       setFormData({
         teamName: '',
-        leaderFullName: '',
-        leaderEmail: '',
-        leaderPhone: '',
         leaderCin: '',
-        member1FullName: '',
-        member1Email: '',
-        member2FullName: '',
-        member2Email: '',
+        driveLink: '',
       });
 
-      showToast('Registration successful ✅', 'success');
+      showToast('Submission successful ✅', 'success');
 
       setTimeout(() => {
         navigate('/success');
@@ -336,7 +301,7 @@ function App() {
               onClick={closeMenu}
               className="block px-5 py-4 text-gray-300 transition hover:bg-white/5 hover:text-cyan-300"
             >
-              Register
+              Submit
             </a>
             <a
               href="#contact"
@@ -392,8 +357,8 @@ function App() {
             <p>📍 Location: ESSAT Privée Gabes</p>
             <p>🕓 Start: April 18, 2026 at 16:00</p>
             <p>🕗 End: April 19, 2026 at 08:00</p>
-            <p>🔴 Registration is FREE and MANDATORY</p>
-            <p>⏳ Deadline: April 15, 2026</p>
+            <p>🔴 Submission is FREE and MANDATORY</p>
+            <p>⏳ Deadline: April 19, 2026 at 08:00</p>
           </div>
 
           <div className="mt-8 rounded-[1.5rem] border border-cyan-400/20 bg-white/5 p-5 text-left shadow-[0_0_25px_rgba(34,211,238,0.08)]">
@@ -419,7 +384,7 @@ function App() {
               href="#register"
               className="rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-fuchsia-500 px-8 py-4 font-bold text-black shadow-[0_0_35px_rgba(34,211,238,0.4)] transition hover:-translate-y-1"
             >
-              Register Now
+              Submit Now
             </a>
 
             <a
@@ -542,130 +507,72 @@ function App() {
       <section id="register" className="mx-auto max-w-5xl px-6 py-20">
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-[0_0_45px_rgba(34,211,238,0.12)] backdrop-blur-xl md:p-10">
           <h2 className="mb-10 text-center text-3xl font-black md:text-4xl">
-            Register Your Team
+            Submit Your Team
           </h2>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <h3 className="mb-4 text-xl font-bold text-cyan-300">
-                Team Information
+          {isClosed ? (
+            <div className="text-center">
+              <h3 className="text-3xl font-black text-red-400">
+                Submissions Closed ❌
               </h3>
-              <input
-                type="text"
-                name="teamName"
-                placeholder="Team Name"
-                value={formData.teamName}
-                onChange={handleChange}
-                className="w-full rounded-2xl border border-white/10 bg-[#0b1120] p-4 text-white placeholder:text-gray-500 focus:border-cyan-400 focus:outline-none"
-              />
+              <p className="mt-4 text-lg leading-8 text-gray-300">
+                The submission deadline has passed.
+              </p>
             </div>
-
-            <div>
-              <h3 className="mb-4 text-xl font-bold text-cyan-300">
-                Team Leader
-              </h3>
-
-              <div className="grid gap-4 md:grid-cols-2">
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <h3 className="mb-4 text-xl font-bold text-cyan-300">
+                  Team Name
+                </h3>
                 <input
                   type="text"
-                  name="leaderFullName"
-                  placeholder="Full Name"
-                  value={formData.leaderFullName}
+                  name="teamName"
+                  placeholder="Enter your team name"
+                  value={formData.teamName}
                   onChange={handleChange}
                   className="w-full rounded-2xl border border-white/10 bg-[#0b1120] p-4 text-white placeholder:text-gray-500 focus:border-cyan-400 focus:outline-none"
                 />
+              </div>
 
-                <input
-                  type="email"
-                  name="leaderEmail"
-                  placeholder="Email"
-                  value={formData.leaderEmail}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-white/10 bg-[#0b1120] p-4 text-white placeholder:text-gray-500 focus:border-cyan-400 focus:outline-none"
-                />
-
-                <input
-                  type="text"
-                  name="leaderPhone"
-                  placeholder="Phone (8 digits)"
-                  value={formData.leaderPhone}
-                  onChange={handleChange}
-                  maxLength={8}
-                  className="w-full rounded-2xl border border-white/10 bg-[#0b1120] p-4 text-white placeholder:text-gray-500 focus:border-cyan-400 focus:outline-none"
-                />
-
+              <div>
+                <h3 className="mb-4 text-xl font-bold text-cyan-300">
+                  Leader CIN
+                </h3>
                 <input
                   type="text"
                   name="leaderCin"
-                  placeholder="CIN (8 digits)"
+                  placeholder="Enter leader CIN"
                   value={formData.leaderCin}
                   onChange={handleChange}
                   maxLength={8}
                   className="w-full rounded-2xl border border-white/10 bg-[#0b1120] p-4 text-white placeholder:text-gray-500 focus:border-cyan-400 focus:outline-none"
                 />
               </div>
-            </div>
 
-            <div>
-              <h3 className="mb-4 text-xl font-bold text-fuchsia-300">
-                Team Member 1
-              </h3>
-
-              <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <h3 className="mb-4 text-xl font-bold text-cyan-300">
+                  Drive Link
+                </h3>
                 <input
-                  type="text"
-                  name="member1FullName"
-                  placeholder="Full Name"
-                  value={formData.member1FullName}
+                  type="url"
+                  name="driveLink"
+                  placeholder="Paste your Google Drive link"
+                  value={formData.driveLink}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-white/10 bg-[#0b1120] p-4 text-white placeholder:text-gray-500 focus:border-fuchsia-400 focus:outline-none"
-                />
-
-                <input
-                  type="email"
-                  name="member1Email"
-                  placeholder="Email"
-                  value={formData.member1Email}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-white/10 bg-[#0b1120] p-4 text-white placeholder:text-gray-500 focus:border-fuchsia-400 focus:outline-none"
+                  className="w-full rounded-2xl border border-white/10 bg-[#0b1120] p-4 text-white placeholder:text-gray-500 focus:border-cyan-400 focus:outline-none"
                 />
               </div>
-            </div>
 
-            <div>
-              <h3 className="mb-4 text-xl font-bold text-fuchsia-300">
-                Team Member 2
-              </h3>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <input
-                  type="text"
-                  name="member2FullName"
-                  placeholder="Full Name"
-                  value={formData.member2FullName}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-white/10 bg-[#0b1120] p-4 text-white placeholder:text-gray-500 focus:border-fuchsia-400 focus:outline-none"
-                />
-
-                <input
-                  type="email"
-                  name="member2Email"
-                  placeholder="Email"
-                  value={formData.member2Email}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-white/10 bg-[#0b1120] p-4 text-white placeholder:text-gray-500 focus:border-fuchsia-400 focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-fuchsia-500 py-4 text-lg font-black text-black shadow-[0_0_30px_rgba(34,211,238,0.35)] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {isSubmitting ? 'Submitting...' : 'Register Team'}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-fuchsia-500 py-4 text-lg font-black text-black shadow-[0_0_30px_rgba(34,211,238,0.35)] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isSubmitting ? 'Submitting...' : 'Submit'}
+              </button>
+            </form>
+          )}
         </div>
       </section>
 
