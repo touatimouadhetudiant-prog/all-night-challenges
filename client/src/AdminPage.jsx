@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
-const API_URL = 'https://all-night-challenges-production.up.railway.app';
+//const API_URL = 'https://all-night-challenges-production.up.railway.app';
+const API_URL = 'http://all-night-challenges.essat-gabes.com:5000';
 
 function AdminPage() {
   const [isAuth, setIsAuth] = useState(false);
@@ -99,8 +100,12 @@ function AdminPage() {
               <th className="p-3 text-center">ID</th>
               <th className="p-3 text-center">Team Name</th>
               <th className="p-3 text-center">Leader CIN</th>
-              <th className="p-3 text-center">Drive Link</th>
-              <th className="p-3 text-center">Date & Time</th>
+              <th className="p-3 text-center">Idea Drive Linkik</th>
+              <th className="p-3 text-center">Project Drive Link</th>
+              <th className="p-3 text-center">Idea last update</th>
+              <th className="p-3 text-center">project submit time</th>
+
+              <th className="p-3 text-center">inscription time</th>
             </tr>
           </thead>
 
@@ -116,7 +121,7 @@ function AdminPage() {
                 <td className="p-3">
                   {item.driveLink ? (
                     <a
-                      href={item.driveLink}
+                      href={item.ideaDriveLink}
                       target="_blank"
                       rel="noreferrer"
                       className="break-all text-cyan-300 underline"
@@ -127,6 +132,22 @@ function AdminPage() {
                     '-'
                   )}
                 </td>
+                <td className="p-3">
+                  {item.driveLink ? (
+                    <a
+                      href={item.projectDriveLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="break-all text-cyan-300 underline"
+                    >
+                      Open Drive Link
+                    </a>
+                  ) : (
+                    '-'
+                  )}
+                </td>
+                <td className="p-3">{formatDateTime(item.idea_last_updated_at)}</td>
+                <td className="p-3">{formatDateTime(item.project_updated_at)}</td>
                 <td className="p-3">{formatDateTime(item.createdAt)}</td>
               </tr>
             ))}
