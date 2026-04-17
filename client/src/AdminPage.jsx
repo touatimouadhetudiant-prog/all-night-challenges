@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-//const API_URL = 'https://all-night-challenges-production.up.railway.app';
-const API_URL = 'http://all-night-challenges.essat-gabes.com:5000';
+const API_URL = 'https://all-night-challenges-production.up.railway.app';
+//const API_URL = 'http://all-night-challenges.essat-gabes.com:5000';
 
 function AdminPage() {
   const [isAuth, setIsAuth] = useState(false);
