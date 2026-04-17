@@ -119,7 +119,7 @@ function AdminPage() {
                 <td className="p-3">{item.teamName || '-'}</td>
                 <td className="p-3">{item.leaderCin || '-'}</td>
                 <td className="p-3">
-                  {item.driveLink ? (
+                  {item.ideaDriveLink ? (
                     <a
                       href={item.ideaDriveLink}
                       target="_blank"
@@ -133,7 +133,7 @@ function AdminPage() {
                   )}
                 </td>
                 <td className="p-3">
-                  {item.driveLink ? (
+                  {item.projectDriveLink ? (
                     <a
                       href={item.projectDriveLink}
                       target="_blank"

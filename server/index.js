@@ -17,8 +17,8 @@ const PORT = Number(process.env.PORT) || 5000;
 // TIME CONFIG (FIXED)
 // =====================
 const DEADLINE = new Date('2026-04-19T07:00:00Z');
-const START_IDEA_SUB = new Date('2026-04-17T17:00:00Z');
-const END_IDEA_SUB = new Date('2026-04-18T20:00:00Z');
+const START_IDEA_SUB = new Date('2026-04-18T17:00:00Z');
+const END_IDEA_SUB = new Date('2026-04-16T20:00:00Z');
 const START_PROJECT_SUB = new Date('2026-04-18T22:00:00Z');
 
 // =====================
