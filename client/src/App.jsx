@@ -9,8 +9,8 @@ import robotImage from './assets/robot.png';
 import forumLogo from './assets/forum.png';
 import oasisLogo from './assets/oasis.png';
 
-//const API_URL = 'https://all-night-challenges-production.up.railway.app';
-const API_URL = 'http://all-night-challenges.essat-gabes.com:5000';
+const API_URL = 'https://all-night-challenges-production.up.railway.app';
+//const API_URL = 'http://all-night-challenges.essat-gabes.com:5000';
 
 const DEADLINE = new Date('2026-04-19T08:00:00');
 
