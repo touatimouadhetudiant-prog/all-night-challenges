@@ -9,8 +9,10 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
-const DEADLINE = new Date('2026-04-19T08:00:00');
-
+const DEADLINE = new Date('2026-04-19T07:00:00');
+const START_IDEA_SUB = new Date('2026-04-18T017:00:00');
+const END_IDEA_SUB = new Date('2026-04-18T020:00:00');
+const START_PROJECT_SUB = new Date('2026-04-18T22:00:00');
 app.use(cors());
 app.use(express.json());
 
@@ -102,9 +104,21 @@ app.get('/api/registrations', (req, res) => {
 app.post('/api/register', (req, res) => {
   const now = new Date();
 
+  if (now < START_IDEA_SUB) {
+    return res.status(400).json({
+      message: 'Idea submissions are not yet started ❌',
+    });
+  }
+
+  if (now > END_IDEA_SUB && now < START_PROJECT_SUB ) {
+    return res.status(400).json({
+      message: 'Idea submissions are closed and project submissions are not yet started ❌',
+    });
+  }
+
   if (now >= DEADLINE) {
     return res.status(400).json({
-      message: 'Submissions are closed ❌',
+      message: 'Project submissions are closed ❌',
     });
   }
 
