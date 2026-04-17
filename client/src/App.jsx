@@ -19,6 +19,12 @@ function App() {
   const [scrolled, setScrolled] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isClosed, setIsClosed] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
   const [toast, setToast] = useState({
     show: false,
     message: '',
@@ -41,13 +47,33 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const checkDeadline = () => {
+    const updateCountdown = () => {
       const now = new Date();
-      setIsClosed(now >= DEADLINE);
+      const diff = DEADLINE.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        setIsClosed(true);
+        setTimeLeft({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+        });
+        return;
+      }
+
+      setIsClosed(false);
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      setTimeLeft({ days, hours, minutes, seconds });
     };
 
-    checkDeadline();
-    const interval = setInterval(checkDeadline, 60000);
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
 
     return () => clearInterval(interval);
   }, []);
@@ -282,41 +308,11 @@ function App() {
 
         {menuOpen && (
           <div className="absolute right-6 mt-2 w-56 rounded-2xl border border-cyan-400/20 bg-black/90 backdrop-blur-xl shadow-[0_0_35px_rgba(34,211,238,0.2)]">
-            <a
-              href="#about"
-              onClick={closeMenu}
-              className="block px-5 py-4 text-gray-300 transition hover:bg-white/5 hover:text-cyan-300"
-            >
-              Event
-            </a>
-            <a
-              href="#powered"
-              onClick={closeMenu}
-              className="block px-5 py-4 text-gray-300 transition hover:bg-white/5 hover:text-cyan-300"
-            >
-              Powered By
-            </a>
-            <a
-              href="#register"
-              onClick={closeMenu}
-              className="block px-5 py-4 text-gray-300 transition hover:bg-white/5 hover:text-cyan-300"
-            >
-              Submit
-            </a>
-            <a
-              href="#contact"
-              onClick={closeMenu}
-              className="block px-5 py-4 text-gray-300 transition hover:bg-white/5 hover:text-cyan-300"
-            >
-              Contact
-            </a>
-            <a
-              href="#partners"
-              onClick={closeMenu}
-              className="block px-5 py-4 text-gray-300 transition hover:bg-white/5 hover:text-cyan-300"
-            >
-              Partners
-            </a>
+            <a href="#about" onClick={closeMenu} className="block px-5 py-4 text-gray-300 transition hover:bg-white/5 hover:text-cyan-300">Event</a>
+            <a href="#powered" onClick={closeMenu} className="block px-5 py-4 text-gray-300 transition hover:bg-white/5 hover:text-cyan-300">Powered By</a>
+            <a href="#register" onClick={closeMenu} className="block px-5 py-4 text-gray-300 transition hover:bg-white/5 hover:text-cyan-300">Submit</a>
+            <a href="#contact" onClick={closeMenu} className="block px-5 py-4 text-gray-300 transition hover:bg-white/5 hover:text-cyan-300">Contact</a>
+            <a href="#partners" onClick={closeMenu} className="block px-5 py-4 text-gray-300 transition hover:bg-white/5 hover:text-cyan-300">Partners</a>
           </div>
         )}
       </header>
@@ -359,6 +355,31 @@ function App() {
             <p>🕗 End: April 19, 2026 at 08:00</p>
             <p>🔴 Submission is FREE and MANDATORY</p>
             <p>⏳ Deadline: April 19, 2026 at 08:00</p>
+          </div>
+
+          <div className="mt-8 rounded-[1.5rem] border border-cyan-400/20 bg-white/5 p-5 shadow-[0_0_25px_rgba(34,211,238,0.08)]">
+            <h3 className="mb-4 text-center text-lg font-bold text-cyan-300">
+              Countdown to Deadline
+            </h3>
+
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              <div className="rounded-2xl border border-white/10 bg-[#0b1120] p-4 text-center">
+                <p className="text-3xl font-black text-cyan-300">{timeLeft.days}</p>
+                <p className="mt-1 text-sm text-gray-400">Days</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-[#0b1120] p-4 text-center">
+                <p className="text-3xl font-black text-cyan-300">{timeLeft.hours}</p>
+                <p className="mt-1 text-sm text-gray-400">Hours</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-[#0b1120] p-4 text-center">
+                <p className="text-3xl font-black text-cyan-300">{timeLeft.minutes}</p>
+                <p className="mt-1 text-sm text-gray-400">Minutes</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-[#0b1120] p-4 text-center">
+                <p className="text-3xl font-black text-cyan-300">{timeLeft.seconds}</p>
+                <p className="mt-1 text-sm text-gray-400">Seconds</p>
+              </div>
+            </div>
           </div>
 
           <div className="mt-8 rounded-[1.5rem] border border-cyan-400/20 bg-white/5 p-5 text-left shadow-[0_0_25px_rgba(34,211,238,0.08)]">
@@ -408,7 +429,6 @@ function App() {
 
           <div className="relative w-full max-w-[500px] rounded-[2.2rem] border border-cyan-400/20 bg-white/5 p-6 backdrop-blur-xl shadow-[0_0_65px_rgba(34,211,238,0.18)]">
             <div className="pointer-events-none absolute inset-0 rounded-[2.2rem] cyber-border" />
-
             <div className="relative flex min-h-[560px] items-center justify-center overflow-hidden rounded-[1.7rem] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.10),rgba(14,19,37,0.88))]">
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 via-transparent to-fuchsia-500/10" />
               <img
@@ -426,79 +446,37 @@ function App() {
           <div className="mb-6 inline-flex rounded-full border border-fuchsia-400/30 bg-fuchsia-500/10 px-4 py-2 text-xs uppercase tracking-[0.28em] text-fuchsia-300">
             Event Description
           </div>
-
-          <h2 className="mb-6 text-3xl font-black md:text-4xl">
-            Green Future
-          </h2>
-
+          <h2 className="mb-6 text-3xl font-black md:text-4xl">Green Future</h2>
           <div className="space-y-4 text-lg leading-8 text-gray-300">
-            <p>
-              « Green Future » est un événement intensif et pratique de trois
-              jours, visant à renforcer les capacités des acteurs locaux dans le
-              domaine de l’entrepreneuriat vert et à soutenir la transition
-              écologique en Tunisie.
-            </p>
-            <p>
-              L’initiative repose sur une approche pédagogique intégrée
-              combinant formation appliquée, pensée innovante, mise en réseau et
-              travail collaboratif.
-            </p>
-            <p>
-              Green Future met l’accent sur l’autonomisation des jeunes, des
-              entrepreneurs, des associations locales et des institutions
-              engagées dans le développement durable, en leur permettant de
-              concevoir et de développer des solutions environnementales
-              innovantes et directement applicables au niveau local.
-            </p>
-            <p>
-              L’événement se concentre particulièrement sur des problématiques
-              environnementales concrètes, telles que la gestion des déchets,
-              l’optimisation de la consommation de l’eau, le recours aux
-              énergies renouvelables et le développement des pratiques de
-              recyclage.
-            </p>
+            <p>« Green Future » est un événement intensif et pratique de trois jours, visant à renforcer les capacités des acteurs locaux dans le domaine de l’entrepreneuriat vert et à soutenir la transition écologique en Tunisie.</p>
+            <p>L’initiative repose sur une approche pédagogique intégrée combinant formation appliquée, pensée innovante, mise en réseau et travail collaboratif.</p>
+            <p>Green Future met l’accent sur l’autonomisation des jeunes, des entrepreneurs, des associations locales et des institutions engagées dans le développement durable, en leur permettant de concevoir et de développer des solutions environnementales innovantes et directement applicables au niveau local.</p>
+            <p>L’événement se concentre particulièrement sur des problématiques environnementales concrètes, telles que la gestion des déchets, l’optimisation de la consommation de l’eau, le recours aux énergies renouvelables et le développement des pratiques de recyclage.</p>
           </div>
         </div>
       </section>
 
       <section id="powered" className="mx-auto max-w-6xl px-6 py-20">
-        <h2 className="mb-12 text-center text-3xl font-black md:text-4xl">
-          Powered By
-        </h2>
+        <h2 className="mb-12 text-center text-3xl font-black md:text-4xl">Powered By</h2>
 
         <div className="grid gap-8 md:grid-cols-2">
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center shadow-[0_0_35px_rgba(255,255,255,0.06)] backdrop-blur-xl">
             <div className="mx-auto mb-6 inline-flex rounded-2xl bg-white p-4">
-              <img
-                src={leadersLogo}
-                alt="Leaders Club"
-                className="h-28 w-28 object-contain"
-              />
+              <img src={leadersLogo} alt="Leaders Club" className="h-28 w-28 object-contain" />
             </div>
             <h3 className="text-2xl font-bold text-white">Leaders Club</h3>
             <p className="mt-4 leading-7 text-gray-400">
-              An inspiring space dedicated to youth personal development and
-              leadership. It enables members to strengthen key skills such as
-              teamwork, communication, time management, and problem-solving in
-              an innovative environment.
+              An inspiring space dedicated to youth personal development and leadership. It enables members to strengthen key skills such as teamwork, communication, time management, and problem-solving in an innovative environment.
             </p>
           </div>
 
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center shadow-[0_0_35px_rgba(255,255,255,0.06)] backdrop-blur-xl">
             <div className="mx-auto mb-6 inline-flex rounded-2xl bg-white p-4">
-              <img
-                src={ovcLogo}
-                alt="OVC"
-                className="h-28 w-28 object-contain"
-              />
+              <img src={ovcLogo} alt="OVC" className="h-28 w-28 object-contain" />
             </div>
             <h3 className="text-2xl font-bold text-white">OVC</h3>
             <p className="mt-4 leading-7 text-gray-400">
-              Founded in 2012, OVC is an independent non-profit organization
-              committed to building a more just, inclusive, and sustainable
-              society. It is particularly active in southern Tunisia, focusing
-              on social and environmental initiatives targeting youth and
-              vulnerable communities.
+              Founded in 2012, OVC is an independent non-profit organization committed to building a more just, inclusive, and sustainable society. It is particularly active in southern Tunisia, focusing on social and environmental initiatives targeting youth and vulnerable communities.
             </p>
           </div>
         </div>
@@ -512,9 +490,7 @@ function App() {
 
           {isClosed ? (
             <div className="text-center">
-              <h3 className="text-3xl font-black text-red-400">
-                Submissions Closed ❌
-              </h3>
+              <h3 className="text-3xl font-black text-red-400">Submissions Closed ❌</h3>
               <p className="mt-4 text-lg leading-8 text-gray-300">
                 The submission deadline has passed.
               </p>
@@ -522,9 +498,7 @@ function App() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <h3 className="mb-4 text-xl font-bold text-cyan-300">
-                  Team Name
-                </h3>
+                <h3 className="mb-4 text-xl font-bold text-cyan-300">Team Name</h3>
                 <input
                   type="text"
                   name="teamName"
@@ -536,9 +510,7 @@ function App() {
               </div>
 
               <div>
-                <h3 className="mb-4 text-xl font-bold text-cyan-300">
-                  Leader CIN
-                </h3>
+                <h3 className="mb-4 text-xl font-bold text-cyan-300">Leader CIN</h3>
                 <input
                   type="text"
                   name="leaderCin"
@@ -551,9 +523,7 @@ function App() {
               </div>
 
               <div>
-                <h3 className="mb-4 text-xl font-bold text-cyan-300">
-                  Drive Link
-                </h3>
+                <h3 className="mb-4 text-xl font-bold text-cyan-300">Drive Link</h3>
                 <input
                   type="url"
                   name="driveLink"
@@ -577,9 +547,7 @@ function App() {
       </section>
 
       <section id="contact" className="mx-auto max-w-6xl px-6 py-20">
-        <h2 className="mb-12 text-center text-3xl font-black md:text-4xl">
-          Contact Us
-        </h2>
+        <h2 className="mb-12 text-center text-3xl font-black md:text-4xl">Contact Us</h2>
 
         <div className="grid gap-6 md:grid-cols-3">
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 text-center backdrop-blur-xl">
@@ -600,58 +568,36 @@ function App() {
       </section>
 
       <section id="partners" className="mx-auto max-w-6xl px-6 py-20">
-        <h2 className="mb-12 text-center text-3xl font-black md:text-4xl">
-          Partners
-        </h2>
+        <h2 className="mb-12 text-center text-3xl font-black md:text-4xl">Partners</h2>
 
         <div className="grid gap-8 md:grid-cols-3">
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center shadow-[0_0_35px_rgba(255,255,255,0.06)] backdrop-blur-xl">
             <div className="mx-auto mb-6 inline-flex rounded-2xl bg-white p-4">
-              <img
-                src={essatLogo}
-                alt="ESSAT Privée Gabès"
-                className="w-32 object-contain"
-              />
+              <img src={essatLogo} alt="ESSAT Privée Gabès" className="w-32 object-contain" />
             </div>
             <h3 className="text-xl font-bold text-white">ESSAT Privée Gabès</h3>
             <p className="mt-4 leading-7 text-gray-400">
-              L’Ecole Supérieure des Sciences Appliquées et de la Technologie
-              Privée de Gabès (ESSAT) a été créée en 2007 autour d’un projet qui
-              concilie pédagogie de haut niveau, initiatives personnelles,
-              développement du comportement professionnel et mise en œuvre de
-              moyens innovants dans le domaine de l’enseignement supérieur.
+              L’Ecole Supérieure des Sciences Appliquées et de la Technologie Privée de Gabès (ESSAT) a été créée en 2007 autour d’un projet qui concilie pédagogie de haut niveau, initiatives personnelles, développement du comportement professionnel et mise en œuvre de moyens innovants dans le domaine de l’enseignement supérieur.
             </p>
           </div>
 
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center shadow-[0_0_35px_rgba(255,255,255,0.06)] backdrop-blur-xl">
             <div className="mx-auto mb-6 inline-flex rounded-2xl bg-white p-4">
-              <img
-                src={oasisLogo}
-                alt="Oasis FM"
-                className="w-32 object-contain"
-              />
+              <img src={oasisLogo} alt="Oasis FM" className="w-32 object-contain" />
             </div>
             <h3 className="text-xl font-bold text-white">Oasis FM</h3>
             <p className="mt-4 leading-7 text-gray-400">
-              Oasis FM is a private Tunisian radio station based in Gabès. It
-              was launched on 29 December 2011 and is considered the first local
-              radio station in the region.
+              Oasis FM is a private Tunisian radio station based in Gabès. It was launched on 29 December 2011 and is considered the first local radio station in the region.
             </p>
           </div>
 
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center shadow-[0_0_35px_rgba(255,255,255,0.06)] backdrop-blur-xl">
             <div className="mx-auto mb-6 inline-flex rounded-2xl bg-white p-4">
-              <img
-                src={forumLogo}
-                alt="Forum FM"
-                className="w-32 object-contain"
-              />
+              <img src={forumLogo} alt="Forum FM" className="w-32 object-contain" />
             </div>
             <h3 className="text-xl font-bold text-white">Forum FM</h3>
             <p className="mt-4 leading-7 text-gray-400">
-              Forum Radio is a private Tunisian radio station based in Gabès. It
-              was launched after the 2011 revolution and focuses on local and
-              regional issues, especially those affecting the south of Tunisia.
+              Forum Radio is a private Tunisian radio station based in Gabès. It was launched after the 2011 revolution and focuses on local and regional issues, especially those affecting the south of Tunisia.
             </p>
           </div>
         </div>
